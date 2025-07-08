@@ -14,7 +14,7 @@ public class MyHooks {
 	
 	@Before
 	public void setup() {
-		DriverFactory.initializeBrowser("edge");
+		DriverFactory.initializeBrowser("chrome");
 		driver=DriverFactory.getDriver();
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();
