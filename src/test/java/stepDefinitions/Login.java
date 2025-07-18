@@ -1,88 +1,102 @@
 package stepDefinitions;
 
-import java.time.Duration;
+
 
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import factory.DriverFactory;
-import io.cucumber.java.After;
-
-import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import pages.AccountPage;
+import pages.HomePage;
+import pages.LoginPage;
+import utils.CommonUtils;
 
 public class Login {
 	
 	WebDriver driver;
+	private LoginPage loginPage;
+	private AccountPage accountPage;
+	private CommonUtils commonUtils;
+	private DriverFactory driverFactory;
 	
     @Given("User has navigates to login page")
 	public void User_has_navigates_to_login_page() {
     	
-    	driver=DriverFactory.getDriver();
-    	driver.findElement(By.xpath("//span[text()='My Account']")).click();
-    	driver.findElement(By.linkText("Login")).click();
+    	driverFactory=new DriverFactory();
+    	driver=driverFactory.getDriver();
+    	HomePage homePage=new HomePage(driver);
+    	homePage.clickOnMyAccount();
+    	loginPage=homePage.selectLoginOption();
+    	
 
 }
-    @When("User enters valid email address {string} into email field")
+    @When("^User enters valid email address (.+) into email field$")
     public void User_enters_valid_email_address_into_email_field(String emailText) {
     	
-    	driver.findElement(By.id("input-email")).sendKeys(emailText);
-
+    	loginPage.enterEmailAddress(emailText);
+    	
     }
     
-    @And("User enters valid password {string} into password field")
+    @And("^User enters valid password (.+) into password field$")
     public void user_enters_valid_password_into_password_field(String passwordText) {
-       driver.findElement(By.id("input-password")).sendKeys(passwordText);
+    	
+    	loginPage.enterPassword(passwordText);
+    	
     }
 
     @And("User clicks on login button")
     public void user_clicks_on_login_button() {
-    	driver.findElement(By.xpath("//input[@value='Login']")).click();
-       
+    	
+    	accountPage = loginPage.clickOnLoginButton();
+    	 
     }
 
     @Then("User should get successfully logged in")
     public void user_should_get_successfully_logged_in() {
     	
-    	Assert.assertTrue(driver.findElement(By.linkText("Edit your account information")).isDisplayed());
+    	Assert.assertTrue(accountPage.displayStatusOfAccountInformationOption());
         
     }
 
-    @When("User enters invalid email address {string} into email field")
-    public void user_enters_invalid_email_address_into_email_field(String invalidEmailText) {
+    @When("User enters invalid email address into email field")
+    public void user_enters_invalid_email_address_into_email_field() {
     	
-    	driver.findElement(By.id("input-email")).sendKeys(invalidEmailText);
-       
+    	commonUtils=new CommonUtils();
+    	loginPage.enterEmailAddress(commonUtils.getEmailWithTimeStamp());
+    	 
     }
 
     @And("User enters invalid password {string} into password field")
     public void user_enters_invalid_password_into_password_field(String invalidPasswordText) {
     	
-    	 driver.findElement(By.id("input-password")).sendKeys(invalidPasswordText);
+    	loginPage.enterPassword(invalidPasswordText);
+    	 
        
     }
 
     @Then("User should get a proper warning message about credentials mismatch")
     public void user_should_get_a_proper_warning_message_about_credentials_mismatch() {
-    	Assert.assertTrue(driver.findElement(By.xpath("//div[contains(@class,'alert-dismissible')]")).getText().contains("Warning: No match for E-Mail Address and/or Password."));
+    	
+    	Assert.assertTrue(loginPage.getWarningMessageText().contains("Warning: No match for E-Mail Address and/or Password."));
        
     }
 
     @When("User dont enter email address into email field")
     public void user_dont_enter_email_address_into_email_field() {
-    	 driver.findElement(By.id("input-email")).sendKeys("");
+    	
+    	loginPage.enterEmailAddress("");	 
     }
 
     @And("User dont enter password into password field")
     public void user_dont_enter_password_into_password_field() {
     	
-    	 driver.findElement(By.id("input-password")).sendKeys("");
-        
+    	loginPage.enterPassword("");
+    	    
     }
-
+    
+    
 }

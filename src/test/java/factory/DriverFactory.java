@@ -1,5 +1,7 @@
 package factory;
 
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -10,7 +12,7 @@ public class DriverFactory {
 	
 	static WebDriver driver=null;
 	
-	public static void initializeBrowser(String browserName) {
+	public WebDriver initializeBrowser(String browserName) {
 		
 		
 		if(browserName.equals("chrome")) {
@@ -31,11 +33,17 @@ public class DriverFactory {
 		
 		}
 		
+		driver.manage().deleteAllCookies();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		
+		return driver;
+		
 		
 		
 	}
 	
-	public static WebDriver getDriver() {
+	public WebDriver getDriver() {
 		
 		return driver;
 	}
